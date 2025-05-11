@@ -3,6 +3,7 @@ from flask_shop.user import user, user_api
 from flask_shop import models, db
 from flask import request
 from flask_restful  import Resource
+from flask_shop.utils.message import to_dict_msg
 
 @user.route('/')
 def index():
@@ -21,48 +22,24 @@ class User(Resource):
         phone = request.form.get('phone')
 
         if not all([name, pwd, real_pwd]):
-            return {
-                'status': 0,
-                'msg': '参数不足'
-            }
+            return to_dict_msg(status=10000)
         if len(name) < 1:
-            return {
-                'status': 10011,
-                'msg': '用户名长度不能小于1'
-            }
+            return to_dict_msg(status=10011)
         if len(pwd) < 2:
-            return {
-                'status': 10012,
-                'msg': '密码长度不能小于2'
-            }
+            return to_dict_msg(status=10012)
         if pwd != real_pwd:
-            return {
-                'status': 10013,
-                'msg': '两次密码不一致'
-            }
+            return to_dict_msg(status=10013)
         if not re.match(r'^1[3-9]\d{9}$', phone):
-            return {
-                'status': 10014,
-                'msg': '手机号格式错误'
-            }
+            return to_dict_msg(status=10014)
         if not re.match(r'^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$', email):
-            return {
-                'status': 10015,
-                'msg': '邮箱格式错误'
-            }
+            return to_dict_msg(status=10015)
         try:
             user = models.User(name=name, password=pwd, nick_name=nick_name, email=email, phone=phone)
             db.session.add(user)
             db.session.commit()
-            return {
-                'status': 200,
-                'msg': '注册成功'
-            }
+            return to_dict_msg(status=200, msg='注册成功')
         except Exception:
-            return {
-                'status': 10000,
-                'msg': '注册失败'
-            }            
+            return to_dict_msg(status=20000, msg='注册失败') 
         
 
 user_api.add_resource(User, '/user')
@@ -74,26 +51,11 @@ def login():
     pwd = request.form.get('pwd')
 
     if not all([name, pwd]):
-        return {
-            'status': 10000,
-            'msg': '参数不足'
-        }
+        return to_dict_msg(status=10000)
 
     if len(name) > 1:
         user = models.User.query.filter_by(name=name).first()
         if user:
             if user.check_password(pwd):
-                return {
-                    'status': 200,
-                    'msg': '登录成功',
-                    'data': {
-                        'name': user.name,
-                        'nick_name': user.nick_name,
-                        'phone': user.phone,
-                        'email': user.email
-                    }
-                }
-    return {
-        'status': 10000,
-        'msg': '用户名或密码错误'
-    }
+                return to_dict_msg(status=200, msg='登录成功')
+    return to_dict_msg(status=10000, msg='用户名或密码错误')
