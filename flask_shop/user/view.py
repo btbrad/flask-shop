@@ -4,6 +4,7 @@ from flask_shop import models, db
 from flask import request
 from flask_restful  import Resource
 from flask_shop.utils.message import to_dict_msg
+from flask_shop.utils.tokens import generate_auth_token, login_required
 
 @user.route('/')
 def index():
@@ -46,6 +47,7 @@ user_api.add_resource(User, '/user')
 
 
 @user.route('/login', methods=['POST'])
+@login_required
 def login():
     name = request.form.get('name')
     pwd = request.form.get('pwd')
@@ -57,5 +59,6 @@ def login():
         user = models.User.query.filter_by(name=name).first()
         if user:
             if user.check_password(pwd):
-                return to_dict_msg(status=200, msg='登录成功')
+                token = generate_auth_token(user.id, 1000*60*60*24*7)
+                return to_dict_msg(status=200, msg='登录成功', data={'token': token})
     return to_dict_msg(status=10000, msg='用户名或密码错误')
