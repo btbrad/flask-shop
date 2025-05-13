@@ -47,10 +47,10 @@ user_api.add_resource(User, '/user')
 
 
 @user.route('/login', methods=['POST'])
-@login_required
+# @login_required
 def login():
-    name = request.form.get('name')
-    pwd = request.form.get('pwd')
+    name = request.json.get('name')
+    pwd = request.json.get('pwd')
 
     if not all([name, pwd]):
         return to_dict_msg(status=10000)
