@@ -12,4 +12,7 @@ def create_app(config_name):
   from flask_shop.user import user
   app.register_blueprint(user)
 
+  from flask_shop.menu import menu
+  app.register_blueprint(menu)
+
   return app

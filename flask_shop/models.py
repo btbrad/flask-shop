@@ -33,7 +33,7 @@ class Menu(db.Model):
     name = db.Column(db.String(32),unique=True,nullable=False)
     level = db.Column(db.Integer)
     path = db.Column(db.String(32))
-    pid = db.Column(db.Integer)
+    pid = db.Column(db.Integer, db.ForeignKey('t_menu.id'))
     children = db.relationship('Menu')
 
     def to_dict(self):
