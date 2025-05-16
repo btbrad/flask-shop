@@ -24,7 +24,16 @@ class User(db.Model, BaseModel):
         self.pwd = generate_password_hash(password)
 
     def check_password(self, password):
-        return check_password_hash(self.pwd, password)    
+        return check_password_hash(self.pwd, password)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'nick_name': self.nick_name,
+            'phone': self.phone,
+            'email': self.email
+        }    
     
 
 class Menu(db.Model):

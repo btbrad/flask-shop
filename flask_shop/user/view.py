@@ -12,7 +12,17 @@ def index():
 
 class User(Resource):
     def get(self):
-        pass
+        try:
+            id = int(request.args.get('id').strip())
+            user = models.User.query.filter_by(id=id).first()
+            if user:
+                return to_dict_msg(status=200, data=user.to_dict())
+            else:
+                return to_dict_msg(status=10000, msg='用户不存在')
+        except Exception:
+            return to_dict_msg(status=10000)    
+
+
 
     def post(self):
         name = request.form.get('name')
