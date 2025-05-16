@@ -16,6 +16,6 @@ class Menu(Resource):
             mu = models.Menu.query.filter(models.Menu.level == 1).all()
             for m in mu:
                 menu_list.append(m.to_dict())
-        return menu_list
+        return to_dict_msg(200, data=menu_list)
     
 menu_api.add_resource(Menu, '/menu')    
